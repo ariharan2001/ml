@@ -1,0 +1,61 @@
+#  finding whether given email is spam or not 
+import pandas as p
+df = {
+      'spam': ["send us your password","review us","send your password","send us your account"],
+      'ham': ["send us your review","review your password"]
+     }
+email = "review us now"
+spam = {}
+ham = {}
+unique = {}
+
+for key in df:
+  for item in df[key]:
+    if key == 'spam':
+      for word in item.split(' '):
+        if word in spam.keys():
+         spam[word] += 1.0
+        else:
+         spam[word] = 1.0
+        unique[word] = 1 
+    else:
+      for word in item.split(' '):
+        if word in ham.keys():
+          ham[word] += 1.0
+        else:
+          ham[word] = 1.0
+        unique[word] = 1
+
+spamcnt = len(spam)
+hamcnt = len(ham)
+tot = len(unique)
+
+for item in spam:
+  spam[item] = spam[item]/len(df['spam'])
+for item in ham:
+  ham[item] = ham[item]/len(df['ham'])
+
+pspam = 1.0 # probability of spam words
+pham = 1.0  # probability of ham words
+tot = len(unique)
+
+for item in spam:
+  if item in email.split(' '):
+    pspam *= max(spam[item],0.1)
+  else:
+    pspam *= max(1-spam[item],0.1)
+
+for item in ham:
+  if item in email.split(' '):
+    pham *= max(ham[item],0.1)
+  else:
+    pham *= max(1-ham[item],0.1)
+
+hamicity = (pham * (hamcnt/tot)) / ( pham * (hamcnt/tot) + pspam * (spamcnt/tot))
+
+if hamicity > 0.5:
+  print("\"",email,"\""," is not a spam email")
+else:
+  print("\"",email,"\""," is a spam email")
+
+
