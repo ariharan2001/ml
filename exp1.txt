@@ -1,0 +1,18 @@
+import pandas as pd 
+initial_data = {'First_name': ['Ram', 'Mohan', 'Tina', 'Jeetu', 'Meera'],  
+                'Age': [10,20,35,45,75],
+                'place':['cdm','cud','chn','cbe','slm'],
+                'BG':['A1B+ve','A+ve','B+ve','a-ve','O+ve']}
+df = pd.DataFrame(initial_data, columns = ['First_name', 'Age', 'place','BG']) 
+result = [] 
+for value in df["Age"]: 
+    if value <18: 
+        result.append(0) 
+    elif value < 25: 
+        result.append(1) 
+    elif value < 60: 
+        result.append(2) 
+    else: 
+        result.append(3) 
+df["Position"] = result    
+print(df)
