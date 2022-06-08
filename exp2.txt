@@ -1,0 +1,27 @@
+import io
+import pandas as pd
+from google.colab import files
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.naive_bayes import MultinomialNB
+uploaded = files.upload()
+df = pd.read_csv(io.BytesIO(uploaded['spam.csv']))
+df.groupby('Category').describe()
+df['spam']=df['Category'].apply(lambda x: 1 if x=='spam' else 0)
+print(df.head())
+X_train, X_test, y_train, y_test = train_test_split(df.Message,df.spam)
+v = CountVectorizer()
+X_train_count = v.fit_transform(X_train.values)
+X_train_count.toarray()[:2]
+model = MultinomialNB()
+model.fit(X_train_count,y_train)
+emails = [
+    'Upto 20% discount on parking, exclusive offer just for you. Dont miss this reward!',
+    'Hey mohan, can we get together to watch footbal game tomorrow?',
+]
+emails_count = v.transform(emails)
+check = pd.DataFrame(emails,columns=['content'])
+check['spam']=model.predict(emails_count)
+print('-'*20)
+print("Predict Results:")
+print(check)
