@@ -1,0 +1,41 @@
+//Wrong code because of Less Efficiency
+import io
+from google.colab import files
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.utils import Bunch
+from sklearn.neighbors import KNeighborsClassifier
+uploaded = files.upload()
+df = pd.read_csv(io.BytesIO(uploaded['abalone.csv']))
+df.head();
+df['Height'] = df['Height'].astype(float)
+df['Length'] = df['Length'].astype(float)
+df['Diameter'] = df['Diameter'].astype(float)
+df = df[df['Height']>0.0]
+df = df[df['Length']>0.0]
+df = df[df['Diameter']>0.0]
+inputs = df.drop('Rings',axis='columns')
+inputs.Sex=inputs.Sex.map({'M':1,'F':2,'I':3 })
+target=df["Rings"]
+print(inputs.head())
+print(target.head())
+X_train, X_test, y_train, y_test = train_test_split(inputs, target)
+knc = KNeighborsClassifier(n_neighbors=5,metric='minkowski')
+def make_spiffy(y):
+    return y.values.reshape(len(y.values))
+knc.fit(X_train, make_spiffy(y_train))
+test_data = {'Sex': [2,3,1],  
+                'Length': [0.53,0.425,0.475],
+                'Diameter':[0.42,0.3,0.37],
+                'Height':[0.135,0.095,0.125],
+                'Whole weight':[0.677,0.3515,0.5095],
+                'Shucked weight':[0.2565,0.141,0.2165],
+                'Viscera weight':[0.1415,0.0775,0.1125],
+                'Shell weight':[0.21,0.12,0.165]
+                }
+check = pd.DataFrame(test_data, columns = ['Sex','Length','Diameter','Height','Whole weight','Shucked weight','Viscera weight','Shell weight'])
+check["Rings"]=knc.predict(check)
+print('-'*20)
+print("Predict Results:")
+print(check)
+print(knc.score(X_test,y_test))
